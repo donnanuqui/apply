@@ -1,0 +1,677 @@
+<!doctype html>
+<html lang="en-PH" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="only light">
+<meta name="robots" content="noindex, nofollow">
+<title>E-Application Form</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=DM+Sans:wght@400;500;600;700&display=swap">
+<style>
+  /* Layout: one calm column, a progress rail on top, a fixed Back/Next bar at the bottom — like Jotform's card pages, in Donna's brand. */
+  :root{
+    color-scheme: only light;
+    --bg:#FDFCFA; --card:#FFFFFF; --ink:#16150F; --muted:#4F4C45; --faint:#8A857A;
+    --line:#E9E3D8; --soft:#F6F2EA; --gold:#B89C6E; --goldd:#8B6F3F; --goldl:#F2EAD9;
+    --err:#B3412E; --errl:#FBEDE9; --ok:#4F7A55;
+    --display:'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+    --body:'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+    --barh:84px;
+  }
+  *{ box-sizing:border-box; }
+  html,body{ background:var(--bg); }
+  body{ margin:0; color:var(--ink); font-family:var(--body); font-size:16px; line-height:1.5; -webkit-text-size-adjust:100%; }
+  .wrap{ max-width:640px; margin:0 auto; padding-inline:20px; padding-block:0 calc(var(--barh) + 48px); }
+
+  /* Header */
+  .top{ display:flex; align-items:center; gap:12px; padding-block:20px 14px; }
+  .top img{ width:44px; height:44px; border-radius:50%; object-fit:cover; border:2px solid var(--goldl); }
+  .top b{ display:block; font-family:var(--display); font-size:1.3rem; font-weight:600; letter-spacing:.01em; line-height:1.1; }
+  .top span{ font-size:.8rem; color:var(--muted); }
+
+  /* Progress */
+  .prog{ position:sticky; top:env(safe-area-inset-top, 0px); z-index:5; background:var(--bg); padding-block:10px 12px; border-bottom:1px solid var(--line); margin-inline:-20px; padding-inline:20px; }
+  .prog-row{ display:flex; justify-content:space-between; align-items:baseline; gap:12px; font-size:.78rem; color:var(--muted); }
+  .prog-row b{ color:var(--ink); font-weight:600; letter-spacing:.08em; text-transform:uppercase; font-size:.72rem; }
+  .prog-bar{ height:4px; background:var(--line); border-radius:4px; margin-top:8px; overflow:hidden; }
+  .prog-bar i{ display:block; height:100%; width:0; background:var(--goldd); border-radius:4px; transition:width .3s ease; }
+
+  /* Step */
+  .step-h{ font-family:var(--display); font-weight:600; font-size:2rem; line-height:1.1; margin:26px 0 6px; text-wrap:balance; }
+  .step-p{ color:var(--muted); margin:0 0 18px; max-width:60ch; }
+  .sec{ font-size:.72rem; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:var(--goldd); margin:26px 0 10px; padding-top:18px; border-top:1px solid var(--line); }
+  .sec:first-child{ border-top:0; padding-top:0; margin-top:6px; }
+  .tip{ font-size:.84rem; color:var(--muted); background:var(--goldl); border-radius:8px; padding:10px 12px; margin:0 0 18px; }
+  .tip b{ color:var(--ink); }
+  .note{ background:var(--soft); border-left:3px solid var(--gold); padding:12px 14px; font-size:.88rem; color:var(--muted); margin:6px 0 14px; }
+
+  .grid{ display:grid; grid-template-columns:1fr 1fr; gap:0 14px; }
+  .grid > .sec, .grid > .note, .grid > .ben, .grid > .addbtn{ grid-column:1 / -1; }
+  .f{ grid-column:1 / -1; margin-bottom:16px; min-width:0; }
+  .f.half{ grid-column:auto; }
+  @media (max-width:420px){ .f.half{ grid-column:1 / -1; } .f.half.keep{ grid-column:auto; } }
+  .f > label, .f > .lbl{ display:block; font-size:.86rem; font-weight:600; margin-bottom:6px; }
+  .f .req{ color:var(--err); margin-left:2px; }
+  .f .opt{ font-weight:400; color:var(--faint); font-size:.8rem; margin-left:4px; }
+  .f .help{ font-size:.78rem; color:var(--faint); margin-top:5px; }
+  input[type=text], input[type=email], input[type=tel], input[type=number], input[type=date], select, textarea{
+    width:100%; font:inherit; font-size:16px; color:var(--ink); background:var(--card);
+    border:1px solid #D9D1C2; border-radius:8px; padding:11px 12px; min-height:46px; appearance:none; -webkit-appearance:none;
+  }
+  input[type=date]{ min-height:46px; }
+  select{ background-image:linear-gradient(45deg, transparent 50%, var(--muted) 50%), linear-gradient(135deg, var(--muted) 50%, transparent 50%); background-position:calc(100% - 18px) 50%, calc(100% - 13px) 50%; background-size:5px 5px; background-repeat:no-repeat; padding-right:34px; }
+  textarea{ min-height:96px; resize:vertical; }
+  input:focus, select:focus, textarea:focus{ outline:none; border-color:var(--goldd); box-shadow:0 0 0 3px var(--goldl); }
+  .unit{ position:relative; }
+  .unit input{ padding-right:46px; }
+  .unit em{ position:absolute; right:12px; top:50%; transform:translateY(-50%); font-style:normal; color:var(--faint); font-size:.88rem; pointer-events:none; }
+
+  /* Choice pills (radio / yes-no) */
+  .pills{ display:flex; flex-wrap:wrap; gap:8px; }
+  .pills label{ position:relative; display:inline-flex; align-items:center; min-height:44px; padding:10px 16px; border:1px solid #D9D1C2; border-radius:999px; background:var(--card); cursor:pointer; font-size:.92rem; font-weight:500; user-select:none; }
+  .pills input{ position:absolute; opacity:0; width:1px; height:1px; }
+  .pills label:has(input:checked){ background:var(--ink); border-color:var(--ink); color:#fff; }
+  .pills label:has(input:focus-visible){ box-shadow:0 0 0 3px var(--goldl); }
+  .pills.yn label{ min-width:84px; justify-content:center; }
+
+  .q{ background:var(--card); border:1px solid var(--line); border-radius:10px; padding:14px 14px 4px; margin-bottom:12px; }
+  .q > .lbl{ font-weight:500 !important; line-height:1.45; }
+
+  .checks{ display:flex; flex-direction:column; gap:8px; }
+  .chk{ display:flex; gap:10px; align-items:flex-start; padding:11px 12px; border:1px solid #D9D1C2; border-radius:8px; background:var(--card); cursor:pointer; font-size:.92rem; }
+  .chk input{ width:20px; height:20px; margin:1px 0 0; accent-color:var(--ink); flex:0 0 20px; }
+  .chk:has(input:checked){ border-color:var(--ink); }
+
+  .f.bad input, .f.bad select, .f.bad textarea, .f.bad .pills label{ border-color:var(--err); }
+  .f .msg{ display:none; color:var(--err); font-size:.8rem; margin-top:5px; }
+  .f.bad .msg{ display:block; }
+  .sub-block{ border-left:2px solid var(--goldl); padding-left:14px; margin:-4px 0 12px; }
+
+  .ben{ border:1px solid var(--line); border-radius:12px; padding:16px 16px 4px; margin-bottom:14px; background:var(--card); }
+  .ben-h{ display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
+  .ben-h b{ font-family:var(--display); font-size:1.3rem; font-weight:600; }
+  .linkbtn{ background:none; border:0; padding:6px 0; font:inherit; font-size:.86rem; color:var(--goldd); text-decoration:underline; cursor:pointer; }
+  .addbtn{ width:100%; min-height:48px; border:1px dashed var(--gold); background:transparent; border-radius:12px; font:inherit; font-weight:600; color:var(--goldd); cursor:pointer; margin-bottom:14px; }
+
+  /* Review */
+  .rv{ border:1px solid var(--line); border-radius:12px; background:var(--card); margin-bottom:12px; }
+  .rv-h{ display:flex; justify-content:space-between; align-items:center; padding:12px 14px; border-bottom:1px solid var(--line); }
+  .rv-h b{ font-size:.78rem; letter-spacing:.12em; text-transform:uppercase; }
+  .rv dl{ margin:0; padding:6px 14px 10px; display:grid; grid-template-columns:minmax(0, 42%) minmax(0, 1fr); gap:6px 12px; font-size:.86rem; }
+  .rv dt{ color:var(--muted); }
+  .rv dd{ margin:0; overflow-wrap:anywhere; white-space:pre-wrap; }
+
+  /* Bottom bar */
+  .bar{ position:fixed; left:0; right:0; bottom:0; z-index:10; background:var(--bg); border-top:1px solid rgba(22,21,15,.16); box-shadow:0 -10px 24px -8px rgba(22,21,15,.18); padding:12px 20px calc(12px + env(safe-area-inset-bottom, 0px)); }
+  .bar-in{ max-width:640px; margin:0 auto; display:flex; gap:10px; }
+  .btn{ min-height:52px; border-radius:0; font:inherit; font-weight:700; letter-spacing:.1em; text-transform:uppercase; font-size:.82rem; cursor:pointer; padding:0 18px; }
+  .btn-back{ background:transparent; border:1px solid var(--ink); color:var(--ink); flex:0 0 auto; }
+  .btn-next{ flex:1; background:var(--ink); border:1px solid var(--ink); color:#fff; }
+  .btn:focus-visible{ outline:3px solid var(--gold); outline-offset:2px; }
+  .btn[disabled]{ opacity:.6; cursor:wait; }
+  .saved{ text-align:center; font-size:.74rem; color:var(--faint); margin-top:14px; }
+  .formerr{ background:var(--errl); color:var(--err); padding:12px 14px; border-radius:8px; font-size:.88rem; margin-bottom:14px; }
+
+  /* Done */
+  .done{ text-align:center; padding-top:40px; }
+  .done img{ width:84px; height:84px; border-radius:50%; object-fit:cover; border:3px solid var(--goldl); }
+  .done h1{ font-family:var(--display); font-size:2.2rem; font-weight:600; margin:16px 0 8px; }
+  .done p{ color:var(--muted); max-width:46ch; margin:0 auto 12px; }
+  .done ol{ text-align:left; max-width:440px; margin:18px auto 0; padding-left:20px; color:var(--ink); font-size:.92rem; }
+  .done li{ margin-bottom:6px; }
+  /* ---- Phone tuning ---- */
+  .f{ scroll-margin-top:96px; scroll-margin-bottom:110px; }
+  .dob{ display:grid; grid-template-columns:1.4fr 1fr 1.2fr; gap:8px; }
+  .pills label{ flex:1 1 auto; justify-content:center; text-align:center; }
+  body.typing .bar{ display:none; }
+  body.typing .wrap{ padding-bottom:40vh; }
+  @media (max-width:520px){
+    .wrap{ padding-inline:16px; }
+    .prog{ margin-inline:-16px; padding-inline:16px; }
+    .f.half{ grid-column:1 / -1; }
+    .f.half.keep{ grid-column:auto; }
+    .top{ padding-block:14px 10px; }
+    .top img{ width:38px; height:38px; }
+    .step-h{ font-size:1.75rem; margin-top:20px; }
+    .q{ padding:14px 12px 4px; }
+    .q > .lbl{ font-size:.95rem; }
+    .pills.yn label{ flex:1 1 0; }
+    .ben{ padding:14px 12px 4px; }
+    .rv dl{ grid-template-columns:1fr; gap:0; }
+    .rv dt{ font-size:.78rem; margin-top:8px; }
+    .rv dd{ font-size:.95rem; }
+    .btn{ font-size:.8rem; padding:0 14px; }
+  }
+  @media (prefers-reduced-motion: reduce){ *{ transition:none !important; scroll-behavior:auto !important; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <img src="data:image/jpeg;base64,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" alt="Donna Nuqui" width="44" height="44">
+    <div><b>Donna Nuqui</b><span>Licensed Financial Advisor · E-Application Form</span></div>
+  </header>
+  <div class="prog" id="prog" aria-live="polite">
+    <div class="prog-row"><b id="progName">Getting started</b><span id="progCount">Step 1 of 8</span></div>
+    <div class="prog-bar"><i id="progBar"></i></div>
+  </div>
+  <main id="app"></main>
+  <p class="saved" id="savedNote">Your answers save automatically as you go. You can close this page and finish later. Just open the link again on the same phone or computer.</p>
+</div>
+<div class="bar" id="bar">
+  <div class="bar-in">
+    <button type="button" class="btn btn-back" id="btnBack" aria-label="Back">&larr; Back</button>
+    <button type="button" class="btn btn-next" id="btnNext">Next &rarr;</button>
+  </div>
+</div>
+
+<datalist id="countries">
+  <option value="Philippines"></option><option value="Australia"></option><option value="Bahrain"></option><option value="Brunei"></option><option value="Canada"></option><option value="China"></option><option value="Germany"></option><option value="Hong Kong"></option><option value="India"></option><option value="Indonesia"></option><option value="Ireland"></option><option value="Israel"></option><option value="Italy"></option><option value="Japan"></option><option value="Kuwait"></option><option value="Malaysia"></option><option value="Netherlands"></option><option value="New Zealand"></option><option value="Norway"></option><option value="Oman"></option><option value="Qatar"></option><option value="Saudi Arabia"></option><option value="Singapore"></option><option value="South Korea"></option><option value="Spain"></option><option value="Switzerland"></option><option value="Taiwan"></option><option value="Thailand"></option><option value="United Arab Emirates"></option><option value="United Kingdom"></option><option value="United States"></option><option value="Vietnam"></option>
+</datalist>
+
+<script>
+(function(){
+  /* ===== Settings ===== */
+  /* Paste the Web app URL from your Google Apps Script deployment here. */
+  var APP_URL = 'https://script.google.com/macros/s/AKfycbzPCc5ezuVwALuGOmpBXhtScpP9_hcm9MdD4jI9vD4UUMHOCJ2sh6ci9JEzOS0L7fiJ/exec';
+  var MESSENGER = 'https://m.me/financial.advisor.donna.n';
+  var STORE_KEY = 'dn-eapp-draft-v1';
+  var DONNA_IMG = document.querySelector('.top img').src;
+
+  /* ===== Answers ===== */
+  var d = {};
+  try { d = JSON.parse(localStorage.getItem(STORE_KEY) || '{}') || {}; } catch(e){ d = {}; }
+  if(!d.benCount) d.benCount = 1;
+  var ref = '';
+  try { ref = new URLSearchParams(location.search).get('ref') || ''; } catch(e){}
+  function save(){ try { localStorage.setItem(STORE_KEY, JSON.stringify(d)); } catch(e){} }
+
+  var TODAY = new Date().toISOString().slice(0, 10);
+  var notMe = function(){ return d.applyFor && d.applyFor !== 'Myself'; };
+  var isMe = function(){ return d.applyFor === 'Myself'; };
+  function yes(k){ return function(){ return d[k] === 'Yes'; }; }
+
+  /* ===== Field builders ===== */
+  var YN = ['Yes', 'No'];
+  var MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  var CIVIL = ['Single', 'Married', 'Widowed', 'Divorced', 'Legally Separated', 'Other'];
+  function nameFields(p, col, req, show){
+    var self = p === 'o' || p === '';
+    return [
+      { k:p+'First', l:'First name', t:'text', req:req, half:true, col:col, show:show, ac: self ? 'given-name' : 'off' },
+      { k:p+'Middle', l:'Middle name', t:'text', half:true, col:col, show:show, ac: self ? 'additional-name' : 'off' },
+      { k:p+'Last', l:'Last name', t:'text', req:req, half:true, col:col, show:show, ac: self ? 'family-name' : 'off' },
+      { k:p+'Suffix', l:'Suffix', t:'text', half:true, keep:true, ph:'Jr., III', col:col, show:show }
+    ];
+  }
+  function addrFields(p, col, req, show){
+    return [
+      { k:p+'Street', l:'House no., street, village/subdivision', t:'text', req:req, col:col, show:show },
+      { k:p+'Brgy', l:'Barangay', t:'text', req:req, half:true, col:col, show:show },
+      { k:p+'City', l:'City / Municipality', t:'text', req:req, half:true, col:col, show:show },
+      { k:p+'Prov', l:'Province / State', t:'text', req:req, half:true, col:col, show:show },
+      { k:p+'Zip', l:'Zip code', t:'text', half:true, keep:true, im:'numeric', col:col, show:show },
+      { k:p+'Country', l:'Country', t:'country', req:req, col:col, show:show, def:'Philippines' }
+    ];
+  }
+
+  /* ===== Steps (same questions as the Jotform, grouped into short pages) ===== */
+  var STEPS = [
+    { id:'start', name:'Getting started', h:'Let’s start your application', p:'This takes about 10–15 minutes. Have a valid ID nearby for the TIN and SSS/GSIS numbers. Everything you share goes only to me, for preparing your Sun Life application.',
+      fields:[
+        { k:'applyFor', l:'Who is this application for?', t:'radio', opts:['Myself', 'My child', 'Someone else'], req:true, col:'Application' },
+        { t:'sec', l:'Policy owner (the one who will pay for the plan)', show:notMe },
+        { t:'note', l:'You’re applying for someone else, so please fill in your own details here first. The next pages are about the person to be insured.', show:notMe }
+      ].concat(nameFields('o', 'Policy owner', true, notMe)).concat([
+        { k:'oRel', l:'Relationship to the person to be insured', t:'text', req:true, ph:'e.g. Father', show:notMe, col:'Policy owner' },
+        { k:'oSex', l:'Sex (at birth)', t:'radio', opts:['Male', 'Female'], req:true, show:notMe, col:'Policy owner' },
+        { k:'oBday', l:'Birthdate', t:'date', req:true, half:true, show:notMe, col:'Policy owner' },
+        { k:'oCivil', l:'Civil status', t:'select', opts:CIVIL, req:true, half:true, show:notMe, col:'Policy owner' },
+        { k:'oMobile', l:'Mobile number', t:'tel', req:true, half:true, show:notMe, col:'Policy owner' },
+        { k:'oEmail', l:'Email', t:'email', req:true, half:true, show:notMe, col:'Policy owner' },
+        { k:'oOcc', l:'Occupation / position', t:'text', req:true, half:true, show:notMe, col:'Policy owner' },
+        { k:'oEmployer', l:'Employer / name of business', t:'text', req:true, half:true, show:notMe, col:'Policy owner' },
+        { k:'oIncome', l:'Annual income (₱)', t:'text', ph:'e.g. 600,000', req:true, half:true, show:notMe, col:'Policy owner' },
+        { k:'oTin', l:'TIN', t:'text', im:'numeric', half:true, show:notMe, col:'Policy owner', either:'oSss', ctx:notMe, help:'Enter at least one: TIN or SSS/GSIS.' },
+        { k:'oSss', l:'SSS / GSIS number', t:'text', im:'numeric', half:true, show:notMe, col:'Policy owner', either:'oTin', ctx:notMe }
+      ]) },
+
+    { id:'personal', name:'Personal details', h:'Personal details', p:'', fields:[
+      { t:'note', l:'Please enter the details of the person to be insured.', show:notMe }
+    ].concat(nameFields('', 'Insured', true)).concat([
+      { k:'sex', l:'Sex (at birth)', t:'radio', opts:['Male', 'Female'], req:true, col:'Insured' },
+      { k:'bday', l:'Birthdate', t:'date', req:true, half:true, col:'Insured' },
+      { k:'civil', l:'Civil status', t:'select', opts:CIVIL, req:true, half:true, col:'Insured' },
+      { t:'sec', l:'Birthplace' },
+      { k:'bpCity', l:'City / Municipality', t:'text', req:true, half:true, col:'Insured birthplace' },
+      { k:'bpProv', l:'Province / State', t:'text', req:true, half:true, col:'Insured birthplace' },
+      { k:'bpCountry', l:'Country', t:'country', req:true, def:'Philippines', col:'Insured birthplace' },
+      { t:'sec', l:'Citizenship and IDs' },
+      { k:'citizen', l:'Citizenship / nationality', t:'radio', opts:['Filipino', 'Other'], req:true, col:'Insured' },
+      { k:'citizenOther', l:'Other citizenship(s)', t:'text', req:true, show:function(){ return d.citizen === 'Other'; }, col:'Insured' },
+      { k:'tin', l:'TIN', t:'text', im:'numeric', half:true, col:'Insured', either:'sss', ctx:isMe, help:'Enter at least one: TIN or SSS/GSIS.' },
+      { k:'sss', l:'SSS / GSIS number', t:'text', im:'numeric', half:true, col:'Insured', either:'tin', ctx:isMe },
+      { t:'sec', l:'Contact' },
+      { k:'mobile', l:'Mobile number', t:'tel', req:isMe, half:true, ph:'09XX XXX XXXX', col:'Insured' },
+      { k:'email', l:'Email', t:'email', req:isMe, half:true, col:'Insured' },
+      { t:'sec', l:'Height and weight' },
+      { k:'height', l:'Height', t:'number', unit:'cm', req:true, half:true, keep:true, col:'Insured' },
+      { k:'weight', l:'Weight', t:'number', unit:'kg', req:true, half:true, keep:true, col:'Insured' }
+    ]) },
+
+    { id:'address', name:'Address', h:'Address', p:'', fields:
+      [{ t:'sec', l:'Present address' }].concat(addrFields('pa', 'Present address', true)).concat([
+        { t:'sec', l:'Permanent address' },
+        { k:'permSame', l:'Is the permanent address the same as the present address?', t:'radio', opts:['Same as present address', 'Different from present address'], req:true, col:'Permanent address' }
+      ]).concat(addrFields('pm', 'Permanent address', true, function(){ return d.permSame === 'Different from present address'; })) },
+
+    { id:'work', name:'Work and income', h:'Work and income', p:'About the person to be insured.', fields:[
+      { t:'note', l:'For a child, just write “Child” or “Student” under occupation and leave the rest blank.', show:notMe },
+      { k:'occ', l:'Primary occupation / position', t:'text', req:true, col:'Work' },
+      { k:'natureWork', l:'Nature of work', t:'text', req:isMe, ph:'e.g. Office-based, field work', col:'Work' },
+      { k:'employer', l:'Employer / name of business', t:'text', req:isMe, col:'Work' },
+      { k:'natureBiz', l:'Nature of business', t:'text', req:isMe, ph:'e.g. IT services, retail', col:'Work' },
+      { k:'years', l:'Total years in employment / business', t:'text', ph:'e.g. 5', req:isMe, half:true, col:'Work' },
+      { k:'income', l:'Annual income (₱)', t:'text', ph:'e.g. 600,000', req:isMe, half:true, col:'Work' },
+      { t:'sec', l:'Business / office address', show:isMe }
+    ].concat(addrFields('ba', 'Business address', false, isMe)).concat([
+      { k:'otherOcc', l:'I have another occupation or business', t:'check', col:'Other occupation' },
+      { k:'oo1', l:'Occupation / position', t:'text', req:true, sub:true, show:yes('otherOcc'), col:'Other occupation' },
+      { k:'oo2', l:'Employer / name of business', t:'text', req:true, sub:true, show:yes('otherOcc'), col:'Other occupation' },
+      { k:'oo3', l:'Nature of business', t:'text', req:true, sub:true, show:yes('otherOcc'), col:'Other occupation' }
+    ]) },
+
+    { id:'health', name:'Health', h:'Health information', p:'Please answer honestly and completely. Correct answers protect the claim later.', fields:[
+      { k:'famHist', l:'Has any of your parents, brothers or sisters been diagnosed with any of these: breast cancer, colon cancer, heart disease or stroke, high blood pressure, or diabetes?', t:'yn', q:true, req:true, col:'Health' },
+      { k:'fhBreast', l:'Breast cancer', t:'check', sub:true, show:yes('famHist'), col:'Family history' },
+      { k:'fhBreastN', l:'How many family members?', t:'number', sub:true, req:true, half:true, show:function(){ return d.famHist === 'Yes' && d.fhBreast === 'Yes'; }, col:'Family history' },
+      { k:'fhColon', l:'Colon cancer', t:'check', sub:true, show:yes('famHist'), col:'Family history' },
+      { k:'fhColonN', l:'How many family members?', t:'number', sub:true, req:true, half:true, show:function(){ return d.famHist === 'Yes' && d.fhColon === 'Yes'; }, col:'Family history' },
+      { k:'fhHeart', l:'Coronary artery disease, heart attack, stroke or angina', t:'check', sub:true, show:yes('famHist'), col:'Family history' },
+      { k:'fhHeartN', l:'How many family members?', t:'number', sub:true, req:true, half:true, show:function(){ return d.famHist === 'Yes' && d.fhHeart === 'Yes'; }, col:'Family history' },
+      { k:'fhHyper', l:'Hypertension (high blood pressure)', t:'check', sub:true, show:yes('famHist'), col:'Family history' },
+      { k:'fhHyperN', l:'How many family members?', t:'number', sub:true, req:true, half:true, show:function(){ return d.famHist === 'Yes' && d.fhHyper === 'Yes'; }, col:'Family history' },
+      { k:'fhDiab', l:'Diabetes', t:'check', sub:true, show:yes('famHist'), col:'Family history' },
+      { k:'fhDiabN', l:'How many family members?', t:'number', sub:true, req:true, half:true, show:function(){ return d.famHist === 'Yes' && d.fhDiab === 'Yes'; }, col:'Family history' },
+      { k:'fhOther', l:'Any other family history? (condition and how many members)', t:'text', sub:true, show:yes('famHist'), col:'Family history' },
+
+      { k:'consult', l:'In the past 5 years, have you consulted a doctor, had any tests (blood test, x-ray, ECG, etc.), or been confined in a hospital?', t:'yn', q:true, req:true, col:'Health' },
+      { k:'consultD', l:'Please give full details', t:'textarea', req:true, sub:true, ph:'What it was for, when, the doctor or hospital, and the result', show:yes('consult'), col:'Health' },
+      { k:'meds', l:'Are you currently taking any medication?', t:'yn', q:true, req:true, col:'Health' },
+      { k:'medsD', l:'Please give full details', t:'textarea', req:true, sub:true, ph:'Name of medicine, dosage, and what it is for', show:yes('meds'), col:'Health' },
+      { k:'wt', l:'In the last 12 months, has your weight changed by more than 10 lbs (4.5 kg)?', t:'yn', q:true, req:true, col:'Health' },
+      { k:'wtHow', l:'How has your weight changed?', t:'select', opts:['Weight gain', 'Weight loss'], req:true, sub:true, show:yes('wt'), col:'Health' },
+      { k:'wtMed', l:'Was it related to a medical condition (e.g. cancer)?', t:'yn', req:true, sub:true, show:yes('wt'), col:'Health' },
+      { k:'wtWhy', l:'Reason for the weight change', t:'textarea', req:true, sub:true, show:yes('wt'), col:'Health' },
+      { k:'ill', l:'Have you ever had any illness, been diagnosed with a condition, or received medical advice or treatment?', t:'yn', q:true, req:true, col:'Health' },
+      { k:'illD', l:'Please give full details', t:'textarea', req:true, sub:true, ph:'Condition, doctor’s name and address, when it started, check-up dates, test results and treatment', show:yes('ill'), col:'Health' },
+      { k:'sym', l:'Do you have any symptoms or pains that you have not seen a doctor for?', t:'yn', q:true, req:true, col:'Health' },
+      { k:'symD', l:'Please give full details', t:'textarea', req:true, sub:true, ph:'The symptoms and why you haven’t had them checked', show:yes('sym'), col:'Health' }
+    ] },
+
+    { id:'life', name:'Travel and lifestyle', h:'Travel, hobbies and lifestyle', p:'', fields:[
+      { k:'travel', l:'In the past 12 months, or in the next 12 months, have you traveled or do you plan to travel outside the Philippines for more than 3 months?', t:'yn', q:true, req:true, col:'Lifestyle' },
+      { k:'hazard', l:'In the past 2 years, or in the next 12 months, have you done or do you plan to do scuba diving, motor racing, skydiving, aerial sports, rock or mountain climbing, or other hazardous sports?', t:'yn', q:true, req:true, col:'Lifestyle' },
+      { k:'alcohol', l:'Do you drink more than 4 drinks a day, drink before or during work, drink to cope, or mix alcohol with drugs or medication?', help:'1 drink = 330 ml beer, 148 ml wine, or 43 ml liquor.', t:'yn', q:true, req:true, col:'Lifestyle' },
+      { k:'drugs', l:'In the past 5 years, have you used marijuana, shabu, ecstasy, cocaine, LSD, heroin, or any other psychoactive drug or narcotic?', t:'yn', q:true, req:true, col:'Lifestyle' },
+      { k:'legal', l:'In the past 10 years, have you been declared insolvent, or been charged with or convicted of a crime?', t:'yn', q:true, req:true, col:'Lifestyle' },
+      { k:'pep', l:'Do you, an immediate family member, or a close associate hold or have held an elected or appointed government position, in the Philippines or elsewhere?', t:'yn', q:true, req:true, col:'Lifestyle' }
+    ].concat(nameFields('pep', 'Government official', true, yes('pep'))).concat([
+      { k:'pepPos', l:'Government position', t:'text', req:true, show:yes('pep'), col:'Government official' },
+      { k:'pepRel', l:'Relationship to the person to be insured', t:'text', req:true, show:yes('pep'), col:'Government official' }
+    ]) },
+
+    { id:'ben', name:'Beneficiaries', h:'Beneficiaries', p:'The people who will receive the benefit. You can add up to 3 here.', fields:[] },
+    { id:'review', name:'Review and submit', h:'Review your answers', p:'Check that everything is correct. Tap Edit to change a section.', fields:[] }
+  ];
+
+  /* Beneficiary fields, built for 1 to 3 */
+  var benStep = STEPS[6];
+  for(var b = 1; b <= 3; b++){
+    (function(n){
+      var p = 'b' + n, col = 'Beneficiary ' + n;
+      var on = function(){ return d.benCount >= n; };
+      benStep.fields.push({ t:'ben', n:n, show:on });
+      benStep.fields = benStep.fields
+        .concat(nameFields(p, col, true, on))
+        .concat([
+          { k:p+'Rel', l:'Relationship to the person to be insured', t:'text', req:true, ph:'e.g. Mother, Spouse', show:on, col:col },
+          { k:p+'Sex', l:'Sex (at birth)', t:'radio', opts:['Male', 'Female'], req:true, show:on, col:col },
+          { k:p+'Bday', l:'Birthdate', t:'date', req:true, half:true, show:on, col:col },
+          { k:p+'Mobile', l:'Mobile number', t:'tel', half:true, show:on, col:col },
+          { k:p+'BpCity', l:'Birthplace (city / municipality)', t:'text', req:true, half:true, show:on, col:col },
+          { k:p+'BpCountry', l:'Birthplace country', t:'country', req:true, half:true, def:'Philippines', show:on, col:col },
+          { k:p+'Citizen', l:'Citizenship / nationality', t:'radio', opts:['Filipino', 'Other'], req:true, show:on, col:col },
+          { k:p+'CitizenOther', l:'Other citizenship(s)', t:'text', req:true, show:function(){ return on() && d[p+'Citizen'] === 'Other'; }, col:col },
+          { k:p+'Addr', l:'Permanent address', t:'radio', opts:['Same as the insured’s present address', 'Different address'], req:true, show:on, col:col },
+          { k:p+'AddrD', l:'Full permanent address', t:'textarea', req:true, ph:'House no., street, barangay, city, province, zip code, country', show:function(){ return on() && d[p+'Addr'] === 'Different address'; }, col:col },
+          { t:'benEnd', n:n, show:on }
+        ]);
+    })(b);
+  }
+  benStep.fields.push({ t:'addBen' });
+  benStep.fields.push({ t:'note', l:'Need more than 3 beneficiaries? Send me their details on Messenger and I’ll add them.' });
+
+  /* ===== Rendering ===== */
+  var app = document.getElementById('app');
+  var cur = 0;
+  try { cur = Math.min(parseInt(localStorage.getItem(STORE_KEY + '-step') || '0', 10) || 0, STEPS.length - 1); } catch(e){}
+
+  function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]; }); }
+  function realVal(v){ v = String(v == null ? '' : v).trim(); return v && !/^n\s*\/?\s*a\.?$/i.test(v) ? v : ''; }
+  function isReq(f){
+    if(f.either) return f.ctx() && !realVal(d[f.either]);
+    return typeof f.req === 'function' ? f.req() : !!f.req;
+  }
+  function visible(f){ return !f.show || f.show(); }
+
+  function fieldHTML(f, i){
+    var id = 'f_' + (f.k || ('x' + i));
+    if(f.t === 'sec') return '<div class="sec" data-i="' + i + '">' + esc(f.l) + '</div>';
+    if(f.t === 'note') return '<div class="note" data-i="' + i + '">' + esc(f.l) + '</div>';
+    if(f.t === 'ben') return '<div class="ben" data-i="' + i + '"><div class="ben-h"><b>Beneficiary ' + f.n + '</b>' + (f.n > 1 ? '<button type="button" class="linkbtn" data-remove="' + f.n + '">Remove</button>' : '') + '</div><div class="grid" data-bengrid="' + f.n + '"></div></div>';
+    if(f.t === 'benEnd') return '';
+    if(f.t === 'addBen') return '<button type="button" class="addbtn" id="addBen" data-i="' + i + '">+ Add another beneficiary</button>';
+    var v = d[f.k];
+    if(v == null && f.def){ v = d[f.k] = f.def; }
+    if(v == null) v = '';
+    var cls = 'f' + (f.half ? ' half' : '') + (f.keep ? ' keep' : '') + (f.q ? ' q' : '');
+    var reqMark = isReq(f) ? '<span class="req" aria-hidden="true">*</span>' : (f.t === 'check' ? '' : '<span class="opt">(optional)</span>');
+    var h = '<div class="' + cls + '" data-i="' + i + '">';
+    var inner = '';
+    if(f.t === 'radio' || f.t === 'yn'){
+      var opts = f.t === 'yn' ? YN : f.opts;
+      inner += '<div class="lbl" id="' + id + '_l">' + esc(f.l) + reqMark + '</div>';
+      inner += '<div class="pills' + (f.t === 'yn' ? ' yn' : '') + '" role="radiogroup" aria-labelledby="' + id + '_l">';
+      opts.forEach(function(o, j){
+        inner += '<label><input type="radio" name="' + id + '" id="' + id + '_' + j + '" value="' + esc(o) + '" data-k="' + f.k + '"' + (v === o ? ' checked' : '') + '>' + esc(o) + '</label>';
+      });
+      inner += '</div>';
+    } else if(f.t === 'check'){
+      inner += '<label class="chk" for="' + id + '"><input type="checkbox" id="' + id + '" data-k="' + f.k + '"' + (v === 'Yes' ? ' checked' : '') + '><span>' + esc(f.l) + '</span></label>';
+    } else {
+      inner += '<label for="' + id + '">' + esc(f.l) + reqMark + '</label>';
+      var common = ' id="' + id + '" data-k="' + f.k + '"' + (f.ph ? ' placeholder="' + esc(f.ph) + '"' : '') + (f.ac ? ' autocomplete="' + f.ac + '"' : '');
+      if(f.t === 'select'){
+        inner += '<select' + common + '><option value="">Please select</option>' + f.opts.map(function(o){ return '<option' + (v === o ? ' selected' : '') + '>' + esc(o) + '</option>'; }).join('') + '</select>';
+      } else if(f.t === 'textarea'){
+        inner += '<textarea' + common + '>' + esc(v) + '</textarea>';
+      } else if(f.t === 'date'){
+        var parts = String(v || '').split('-');
+        var pm = d[f.k + '__m'] || (parts[1] ? String(+parts[1]) : ''), pd = d[f.k + '__d'] || (parts[2] ? String(+parts[2]) : ''), py = d[f.k + '__y'] || parts[0] || '';
+        var yNow = new Date().getFullYear(), sel = function(a, b){ return String(a) === String(b) ? ' selected' : ''; };
+        var mo = '<option value="">Month</option>', dy = '<option value="">Day</option>', yr = '<option value="">Year</option>';
+        MONTHS.forEach(function(m, mi){ mo += '<option value="' + (mi + 1) + '"' + sel(mi + 1, pm) + '>' + m + '</option>'; });
+        for(var dd = 1; dd <= 31; dd++) dy += '<option' + sel(dd, pd) + '>' + dd + '</option>';
+        for(var yy = yNow; yy >= yNow - 100; yy--) yr += '<option' + sel(yy, py) + '>' + yy + '</option>';
+        inner = inner.replace('<label for="' + id + '">', '<label for="' + id + '_m">');
+        inner += '<div class="dob"><select id="' + id + '_m" data-date="' + f.k + '" data-part="m" aria-label="Month">' + mo + '</select>'
+          + '<select id="' + id + '_d" data-date="' + f.k + '" data-part="d" aria-label="Day">' + dy + '</select>'
+          + '<select id="' + id + '_y" data-date="' + f.k + '" data-part="y" aria-label="Year">' + yr + '</select></div>';
+      } else if(f.t === 'country'){
+        inner += '<input type="text" list="countries" autocapitalize="words" enterkeyhint="next"' + common + ' value="' + esc(v) + '">';
+      } else if(f.t === 'number'){
+        var inp = '<input type="number" inputmode="decimal" min="0" step="any" enterkeyhint="next"' + common + ' value="' + esc(v) + '">';
+        inner += f.unit ? '<div class="unit">' + inp + '<em>' + f.unit + '</em></div>' : inp;
+      } else {
+        var type = f.t === 'email' ? 'email' : (f.t === 'tel' ? 'tel' : 'text');
+        var im = f.t === 'email' ? 'email' : (f.t === 'tel' ? 'tel' : (f.im || ''));
+        var cap = f.t === 'email' ? ' autocapitalize="off" autocorrect="off" spellcheck="false"' : (f.t === 'text' && !f.im ? ' autocapitalize="words"' : '');
+        inner += '<input type="' + type + '"' + (im ? ' inputmode="' + im + '"' : '') + cap + ' enterkeyhint="next"' + common + ' value="' + esc(v) + '">';
+      }
+    }
+    if(f.help) inner += '<div class="help">' + esc(f.help) + '</div>';
+    inner += '<div class="msg" id="' + id + '_m"></div>';
+    h += inner + '</div>';
+    return h;
+  }
+
+  function renderStep(){
+    var s = STEPS[cur];
+    document.getElementById('progName').textContent = s.name;
+    document.getElementById('progCount').textContent = 'Step ' + (cur + 1) + ' of ' + STEPS.length;
+    document.getElementById('progBar').style.width = Math.round((cur + 1) / STEPS.length * 100) + '%';
+    document.getElementById('btnBack').style.visibility = cur === 0 ? 'hidden' : 'visible';
+    document.getElementById('btnNext').innerHTML = cur === STEPS.length - 1 ? 'Submit application' : (cur === STEPS.length - 2 ? 'Review answers &rarr;' : 'Next &rarr;');
+    var html = '<h1 class="step-h">' + esc(s.h) + '</h1>' + (s.p ? '<p class="step-p">' + esc(s.p) + '</p>' : '')
+      + (s.id !== 'review' ? '<p class="tip"><b>Tip:</b> If a question doesn’t apply to you or you don’t have the info yet, just type <b>N/A</b> so you can continue.</p>' : '');
+    if(s.id === 'review'){ app.innerHTML = html + reviewHTML(); bindReview(); return; }
+    html += '<div class="grid" id="grid">';
+    var inBen = 0, benParts = {};
+    s.fields.forEach(function(f, i){
+      if(f.t === 'ben'){ inBen = f.n; html += fieldHTML(f, i); benParts[f.n] = ''; return; }
+      if(f.t === 'benEnd'){ inBen = 0; return; }
+      if(inBen){ benParts[inBen] += fieldHTML(f, i); return; }
+      html += fieldHTML(f, i);
+    });
+    html += '</div>';
+    app.innerHTML = html;
+    Object.keys(benParts).forEach(function(n){ var g = app.querySelector('[data-bengrid="' + n + '"]'); if(g) g.innerHTML = benParts[n]; });
+    wrapSubs();
+    applyVisibility();
+    bindStep();
+  }
+
+  /* Indent follow-up questions under the question that opened them */
+  function wrapSubs(){
+    var s = STEPS[cur];
+    s.fields.forEach(function(f, i){
+      if(!f.sub) return;
+      var el = app.querySelector('[data-i="' + i + '"]');
+      if(el) el.classList.add('sub-block');
+    });
+  }
+
+  function applyVisibility(){
+    var s = STEPS[cur];
+    s.fields.forEach(function(f, i){
+      var el = app.querySelector('[data-i="' + i + '"]');
+      if(!el) return;
+      el.hidden = !visible(f);
+      if(f.k && isReq(f) !== !!el.querySelector('.req')){
+        var lab = el.querySelector('label:not(.chk), .lbl');
+        if(lab){
+          var old = lab.querySelector('.req, .opt'); if(old) old.remove();
+          var sp = document.createElement('span');
+          sp.className = isReq(f) ? 'req' : 'opt';
+          sp.textContent = isReq(f) ? '*' : '(optional)';
+          lab.appendChild(sp);
+        }
+      }
+    });
+    var add = document.getElementById('addBen');
+    if(add) add.hidden = d.benCount >= 3;
+  }
+
+  app.addEventListener('keydown', function(e){
+    if(e.key !== 'Enter' || e.target.tagName !== 'INPUT') return;
+    e.preventDefault();
+    var list = Array.prototype.filter.call(app.querySelectorAll('input:not([type=radio]):not([type=checkbox]), select, textarea'), function(x){ return x.offsetParent !== null; });
+    var i = list.indexOf(e.target);
+    if(i > -1 && list[i + 1]) list[i + 1].focus(); else e.target.blur();
+  });
+  /* Hide the Back/Next bar only while the phone keyboard is open, so it doesn't cover the field being typed in */
+  if(window.visualViewport){
+    var baseH = window.innerHeight;
+    var kb = function(){
+      if(!document.activeElement || !/^(INPUT|TEXTAREA)$/.test(document.activeElement.tagName)) baseH = Math.max(baseH, window.innerHeight);
+      var open = baseH - window.visualViewport.height > 150;
+      document.body.classList.toggle('typing', open);
+    };
+    window.visualViewport.addEventListener('resize', kb);
+    window.addEventListener('orientationchange', function(){ baseH = 0; setTimeout(function(){ baseH = window.innerHeight; kb(); }, 400); });
+  }
+  app.addEventListener('input', onInput);
+  app.addEventListener('change', onInput);
+  function bindStep(){
+    var add = document.getElementById('addBen');
+    if(add) add.addEventListener('click', function(){
+      d.benCount = Math.min(3, d.benCount + 1); save(); renderStep();
+      var g = app.querySelector('[data-bengrid="' + d.benCount + '"]'); if(g) g.parentNode.scrollIntoView({ behavior:'smooth', block:'start' });
+    });
+    Array.prototype.forEach.call(app.querySelectorAll('[data-remove]'), function(btn){
+      btn.addEventListener('click', function(){
+        var n = parseInt(this.getAttribute('data-remove'), 10);
+        /* Shift later beneficiaries up, then clear the last one */
+        for(var m = n; m < d.benCount; m++){
+          Object.keys(d).forEach(function(k){ if(k.indexOf('b' + (m + 1)) === 0){ d['b' + m + k.slice(2)] = d[k]; } });
+        }
+        var last = 'b' + d.benCount;
+        Object.keys(d).forEach(function(k){ if(k.indexOf(last) === 0 && /^b\d[A-Z]/.test(k)) delete d[k]; });
+        d.benCount = Math.max(1, d.benCount - 1); save(); renderStep();
+      });
+    });
+  }
+  function onInput(e){
+    var el = e.target;
+    var dk = el.getAttribute && el.getAttribute('data-date');
+    if(dk){
+      d[dk + '__' + el.getAttribute('data-part')] = el.value;
+      var M = d[dk + '__m'], D = d[dk + '__d'], Y = d[dk + '__y'];
+      d[dk] = (M && D && Y) ? Y + '-' + ('0' + M).slice(-2) + '-' + ('0' + D).slice(-2) : '';
+      save();
+      var w = el.closest('.f'); if(w && d[dk]) w.classList.remove('bad');
+      return;
+    }
+    var k = el.getAttribute && el.getAttribute('data-k');
+    if(!k) return;
+    d[k] = el.type === 'checkbox' ? (el.checked ? 'Yes' : '') : el.value;
+    save();
+    var wrap = el.closest('.f'); if(wrap && wrap.classList.contains('bad') && e.type === 'change') wrap.classList.remove('bad');
+    if(e.type === 'change' || el.type === 'radio' || el.type === 'checkbox' || /^(tin|sss|oTin|oSss)$/.test(k)) applyVisibility();
+    if(/^(tin|sss|oTin|oSss)$/.test(k) && realVal(el.value)){ Array.prototype.forEach.call(app.querySelectorAll('[data-k="tin"],[data-k="sss"],[data-k="oTin"],[data-k="oSss"]'), function(x){ var w = x.closest('.f'); if(w) w.classList.remove('bad'); }); }
+  }
+
+  /* ===== Validation ===== */
+  function checkField(f){
+    var v = (d[f.k] == null ? '' : String(d[f.k])).trim();
+    if(f.either && f.ctx() && !realVal(v) && !realVal(d[f.either])) return 'Please enter a TIN or an SSS/GSIS number. At least one is needed.';
+    if(f.t === 'date' && !v && (d[f.k + '__m'] || d[f.k + '__d'] || d[f.k + '__y'])) return 'Please choose the month, day and year.';
+    if(isReq(f) && !v) return f.t === 'date' ? 'Please choose the month, day and year.' : f.t === 'radio' || f.t === 'yn' || f.t === 'select' ? 'Please choose one.' : 'Please fill this in, or type N/A if it doesn’t apply.';
+    if(!v) return '';
+    if(/^n\s*\/?\s*a\.?$/i.test(v) && f.t !== 'date') return '';
+    if(f.t === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v)) return 'Please enter a valid email, like name@gmail.com.';
+    if(f.t === 'tel' && v.replace(/\D/g, '').length < 10) return 'Please enter a complete mobile number, like 0917 123 4567.';
+    if(f.t === 'date'){
+      if(v > TODAY) return 'The date can’t be in the future.';
+      var pp = v.split('-'), dt = new Date(+pp[0], +pp[1] - 1, +pp[2]);
+      if(dt.getMonth() !== +pp[1] - 1) return 'That date doesn’t exist. Please check the day.';
+    }
+    if(f.k === 'height' && (+v < 30 || +v > 250)) return 'Please enter the height in centimeters (e.g. 160).';
+    if(f.k === 'weight' && (+v < 1 || +v > 300)) return 'Please enter the weight in kilograms (e.g. 58).';
+    return '';
+  }
+  function validateStep(idx, mark){
+    var s = STEPS[idx], first = null, ok = true;
+    s.fields.forEach(function(f, i){
+      if(!f.k || f.t === 'check' || !visible(f)) return;
+      var msg = checkField(f);
+      if(mark){
+        var el = app.querySelector('[data-i="' + i + '"]');
+        if(el){ el.classList.toggle('bad', !!msg); var m = el.querySelector('.msg'); if(m) m.textContent = msg; }
+        if(msg && !first) first = el;
+      }
+      if(msg) ok = false;
+    });
+    if(first){ first.scrollIntoView({ behavior:'smooth', block:'center' }); var inp = first.querySelector('input:not([type=radio]):not([type=checkbox]), textarea'); if(inp && !window.matchMedia('(pointer:coarse)').matches) setTimeout(function(){ try { inp.focus({ preventScroll:true }); } catch(e){} }, 300); }
+    return ok;
+  }
+
+  /* ===== Review + data rows ===== */
+  function rowsFor(idx){
+    var s = STEPS[idx], out = [];
+    s.fields.forEach(function(f){
+      if(!f.k || !visible(f)) return;
+      var v = d[f.k]; if(v == null || v === '') return;
+      if(f.t === 'date'){ var q = String(v).split('-'); v = MONTHS[+q[1] - 1] + ' ' + (+q[2]) + ', ' + q[0]; }
+      out.push([f.col + ' · ' + f.l + (f.unit ? ' (' + f.unit + ')' : ''), String(v), f.l]);
+    });
+    return out;
+  }
+  function reviewHTML(){
+    var h = '';
+    for(var i = 0; i < STEPS.length - 1; i++){
+      var r = rowsFor(i);
+      h += '<section class="rv"><div class="rv-h"><b>' + esc(STEPS[i].name) + '</b><button type="button" class="linkbtn" data-edit="' + i + '">Edit</button></div><dl>';
+      h += r.length ? r.map(function(x){ return '<dt>' + esc(/^(Insured|Policy owner|Health|Lifestyle|Work|Application) · /.test(x[0]) ? x[2] : x[0]) + '</dt><dd>' + esc(x[1]) + '</dd>'; }).join('') : '<dt>No answers</dt><dd></dd>';
+      h += '</dl></section>';
+    }
+    h += '<div class="f" data-i="cert" style="margin-top:18px"><label class="chk" for="f_cert"><input type="checkbox" id="f_cert"' + (d.cert === 'Yes' ? ' checked' : '') + '><span>I confirm that the information above is true and complete. I agree to let Donna Nuqui, a licensed financial advisor, use it to prepare my Sun Life application, in line with the Data Privacy Act of 2012.</span></label><div class="msg">Please tick the box to confirm.</div></div>';
+    h += '<div id="formErr"></div>';
+    return h;
+  }
+  function bindReview(){
+    Array.prototype.forEach.call(app.querySelectorAll('[data-edit]'), function(b){
+      b.addEventListener('click', function(){ go(parseInt(this.getAttribute('data-edit'), 10)); });
+    });
+    document.getElementById('f_cert').addEventListener('change', function(){ d.cert = this.checked ? 'Yes' : ''; save(); this.closest('.f').classList.remove('bad'); });
+  }
+
+  /* ===== Navigation ===== */
+  function go(n){
+    cur = Math.max(0, Math.min(STEPS.length - 1, n));
+    try { localStorage.setItem(STORE_KEY + '-step', String(cur)); } catch(e){}
+    renderStep();
+    window.scrollTo(0, 0);
+  }
+  document.getElementById('btnBack').addEventListener('click', function(){ go(cur - 1); });
+  document.getElementById('btnNext').addEventListener('click', function(){
+    if(STEPS[cur].id === 'review'){ submit(); return; }
+    if(!validateStep(cur, true)) return;
+    go(cur + 1);
+  });
+
+  /* ===== Submit to Google Sheet ===== */
+  function submit(){
+    for(var i = 0; i < STEPS.length - 1; i++){
+      if(!validateStep(i, false)){ go(i); setTimeout(function(){ validateStep(cur, true); }, 50); return; }
+    }
+    if(d.cert !== 'Yes'){ var c = app.querySelector('[data-i="cert"]'); c.classList.add('bad'); c.scrollIntoView({ behavior:'smooth', block:'center' }); return; }
+    var rows = [['Applying for', d.applyFor || '']];
+    for(var j = 0; j < STEPS.length - 1; j++){ rowsFor(j).forEach(function(r){ if(r[0] !== 'Application · Who is this application for?') rows.push([r[0], r[1]]); }); }
+    var payload = {
+      ref: ref,
+      insured: [d.First, d.Middle, d.Last, d.Suffix].filter(Boolean).join(' '),
+      owner: notMe() ? [d.oFirst, d.oLast].filter(Boolean).join(' ') : '',
+      contact: notMe() ? (d.oMobile || '') : (d.mobile || ''),
+      email: String((notMe() ? d.oEmail : d.email) || '').trim(),
+      firstName: notMe() ? (d.oFirst || '') : (d.First || ''),
+      rows: rows
+    };
+    var btn = document.getElementById('btnNext');
+    var errBox = document.getElementById('formErr');
+    errBox.innerHTML = '';
+    if(!/^https:\/\/script\.google\.com\//.test(APP_URL)){
+      errBox.innerHTML = '<div class="formerr">This form isn’t connected to the Google Sheet yet, so nothing was sent. Please message Donna on <a href="' + MESSENGER + '" target="_blank" rel="noopener">Messenger</a>.</div>';
+      return;
+    }
+    btn.disabled = true; btn.textContent = 'Sending…';
+    fetch(APP_URL, { method:'POST', mode:'no-cors', headers:{ 'Content-Type':'text/plain;charset=utf-8' }, body: JSON.stringify(payload) })
+      .then(function(){
+        try { localStorage.removeItem(STORE_KEY); localStorage.removeItem(STORE_KEY + '-step'); } catch(e){}
+        showDone(payload.insured, payload.email);
+      })
+      .catch(function(){
+        btn.disabled = false; btn.textContent = 'Submit application';
+        errBox.innerHTML = '<div class="formerr">We couldn’t send your answers. Please check your internet connection and tap Submit again. Your answers are still saved on this device.</div>';
+      });
+  }
+  function showDone(name, email){
+    var validEmail = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email || '');
+    document.getElementById('bar').hidden = true;
+    document.getElementById('prog').hidden = true;
+    document.getElementById('savedNote').hidden = true;
+    app.innerHTML = '<div class="done"><img src="' + DONNA_IMG + '" alt="Donna Nuqui" width="84" height="84"><h1>Thank you!</h1>'
+      + '<p>I’ve received the application details' + (name ? ' for <b>' + esc(name) + '</b>' : '') + '. I’ll review them and message you if anything needs to be clarified.</p>'
+      + (validEmail ? '<p>A copy of your answers is on its way to <b>' + esc(email) + '</b>. If you don’t see it in a few minutes, check your Spam or Promotions folder.</p>' : '')
+      + '<p>Next, please send me the photos of your requirements on Messenger so we can complete the application.</p>'
+      + '<p><a href="' + MESSENGER + '" target="_blank" rel="noopener" class="btn btn-next" style="display:inline-flex;align-items:center;justify-content:center;text-decoration:none;padding:0 24px">Message Donna</a></p></div>';
+    window.scrollTo(0, 0);
+  }
+
+  renderStep();
+})();
+</script>
+</body>
+</html>
