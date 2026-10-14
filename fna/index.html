@@ -159,8 +159,8 @@
 <script>
 (function(){
   /* ===== Settings ===== */
-  /* Paste the Web app URL from your Google Apps Script deployment here. */
-  var APP_URL = '';
+  /* Web app URL from the Google Apps Script deployment (same URL as apply.donnanuqui.com). */
+  var APP_URL = 'https://script.google.com/macros/s/AKfycbzPCc5ezuVwALuGOmpBXhtScpP9_hcm9MdD4jI9vD4UUMHOCJ2sh6ci9JEzOS0L7fiJ/exec';
   var MESSENGER = 'https://m.me/financial.advisor.donna.n';
   var STORE_KEY = 'dn-fna-draft-v1';
   var DONNA_IMG = document.querySelector('.top img').src;
@@ -437,7 +437,7 @@
     go(cur + 1);
   });
 
-  /* ===== Submit to Google Sheet ===== */
+  /* ===== Submit to Google Sheet (saved to the "FNA" tab) ===== */
   function submit(){
     for(var i = 0; i < STEPS.length - 1; i++){
       if(!validateStep(i, false)){ go(i); setTimeout(function(){ validateStep(cur, true); }, 50); return; }
@@ -448,7 +448,7 @@
     var payload = {
       form: 'FNA',
       ref: ref,
-      insured: [d.First, d.Middle, d.Last, d.Suffix].filter(Boolean).join(' '),
+      name: [d.First, d.Middle, d.Last, d.Suffix].filter(Boolean).join(' '),
       firstName: d.First || '',
       rows: rows
     };
