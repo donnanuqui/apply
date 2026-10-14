@@ -1,0 +1,489 @@
+<!doctype html>
+<html lang="en-PH" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="only light">
+<meta name="robots" content="noindex, nofollow">
+<title>Financial Needs Analysis</title>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-1TXKES216M"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){ dataLayer.push(arguments); }
+  gtag('js', new Date());
+  gtag('config', 'G-1TXKES216M');
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=DM+Sans:wght@400;500;600;700&display=swap">
+<style>
+  /* Same look as apply.donnanuqui.com: one calm column, progress rail on top, fixed Back/Next bar. */
+  :root{
+    color-scheme: only light;
+    --bg:#FDFCFA; --card:#FFFFFF; --ink:#16150F; --muted:#4F4C45; --faint:#8A857A;
+    --line:#E9E3D8; --soft:#F6F2EA; --gold:#B89C6E; --goldd:#8B6F3F; --goldl:#F2EAD9;
+    --err:#B3412E; --errl:#FBEDE9; --ok:#4F7A55;
+    --display:'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+    --body:'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+    --barh:84px;
+  }
+  *{ box-sizing:border-box; }
+  html,body{ background:var(--bg); }
+  body{ margin:0; color:var(--ink); font-family:var(--body); font-size:16px; line-height:1.5; -webkit-text-size-adjust:100%; }
+  .wrap{ max-width:640px; margin:0 auto; padding-inline:20px; padding-block:0 calc(var(--barh) + 48px); }
+
+  .top{ display:flex; align-items:center; gap:12px; padding-block:20px 14px; }
+  .top img{ width:44px; height:44px; border-radius:50%; object-fit:cover; border:2px solid var(--goldl); }
+  .top b{ display:block; font-family:var(--display); font-size:1.3rem; font-weight:600; letter-spacing:.01em; line-height:1.1; }
+  .top span{ font-size:.8rem; color:var(--muted); }
+
+  .prog{ position:sticky; top:env(safe-area-inset-top, 0px); z-index:5; background:var(--bg); padding-block:10px 12px; border-bottom:1px solid var(--line); margin-inline:-20px; padding-inline:20px; }
+  .prog-row{ display:flex; justify-content:space-between; align-items:baseline; gap:12px; font-size:.78rem; color:var(--muted); }
+  .prog-row b{ color:var(--ink); font-weight:600; letter-spacing:.08em; text-transform:uppercase; font-size:.72rem; }
+  .prog-bar{ height:4px; background:var(--line); border-radius:4px; margin-top:8px; overflow:hidden; }
+  .prog-bar i{ display:block; height:100%; width:0; background:var(--goldd); border-radius:4px; transition:width .3s ease; }
+
+  .step-h{ font-family:var(--display); font-weight:600; font-size:2rem; line-height:1.1; margin:26px 0 6px; text-wrap:balance; }
+  .step-p{ color:var(--muted); margin:0 0 18px; max-width:60ch; }
+  .sec{ font-size:.72rem; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:var(--goldd); margin:26px 0 10px; padding-top:18px; border-top:1px solid var(--line); }
+  .sec:first-child{ border-top:0; padding-top:0; margin-top:6px; }
+  .note{ background:var(--soft); border-left:3px solid var(--gold); padding:12px 14px; font-size:.88rem; color:var(--muted); margin:6px 0 14px; }
+
+  .grid{ display:grid; grid-template-columns:1fr 1fr; gap:0 14px; }
+  .grid > .sec, .grid > .note{ grid-column:1 / -1; }
+  .f{ grid-column:1 / -1; margin-bottom:16px; min-width:0; scroll-margin-top:96px; scroll-margin-bottom:110px; }
+  .f.half{ grid-column:auto; }
+  .f > label, .f > .lbl{ display:block; font-size:.86rem; font-weight:600; margin-bottom:6px; }
+  .f .req{ color:var(--err); margin-left:2px; }
+  .f .opt{ font-weight:400; color:var(--faint); font-size:.8rem; margin-left:4px; }
+  .f .hint{ display:block; font-weight:400; color:var(--faint); font-size:.8rem; margin-top:2px; }
+  .f .help{ font-size:.78rem; color:var(--faint); margin-top:8px; }
+  input[type=text], select, textarea{
+    width:100%; font:inherit; font-size:16px; color:var(--ink); background:var(--card);
+    border:1px solid #D9D1C2; border-radius:8px; padding:11px 12px; min-height:46px; appearance:none; -webkit-appearance:none;
+  }
+  input:focus, select:focus, textarea:focus{ outline:none; border-color:var(--goldd); box-shadow:0 0 0 3px var(--goldl); }
+
+  /* Question card */
+  .q{ background:var(--card); border:1px solid var(--line); border-radius:10px; padding:14px 14px 6px; margin-bottom:14px; }
+  .q > .lbl{ font-weight:600 !important; font-size:.95rem !important; line-height:1.45; margin-bottom:10px !important; }
+  .q > .lbl .num{ color:var(--goldd); margin-right:4px; }
+
+  /* Choice pills (short answers) */
+  .pills{ display:flex; flex-wrap:wrap; gap:8px; margin-bottom:8px; }
+  .pills label{ position:relative; display:inline-flex; flex:1 1 auto; justify-content:center; text-align:center; align-items:center; min-height:44px; padding:10px 16px; border:1px solid #D9D1C2; border-radius:999px; background:var(--card); cursor:pointer; font-size:.92rem; font-weight:500; user-select:none; }
+  .pills input{ position:absolute; opacity:0; width:1px; height:1px; }
+  .pills label:has(input:checked){ background:var(--ink); border-color:var(--ink); color:#fff; }
+  .pills label:has(input:focus-visible){ box-shadow:0 0 0 3px var(--goldl); }
+
+  /* Option rows (answers with a title and a short explanation) */
+  .rows{ display:flex; flex-direction:column; gap:8px; margin-bottom:8px; }
+  .row{ display:flex; gap:12px; align-items:flex-start; padding:12px; border:1px solid #D9D1C2; border-radius:8px; background:var(--card); cursor:pointer; font-size:.92rem; line-height:1.4; }
+  .row input{ width:20px; height:20px; margin:1px 0 0; accent-color:var(--ink); flex:0 0 20px; }
+  .row b{ display:block; font-size:.76rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; margin-bottom:2px; }
+  .row span span{ color:var(--muted); }
+  .row:has(input:checked){ border-color:var(--ink); background:var(--soft); }
+  .row:has(input:focus-visible){ box-shadow:0 0 0 3px var(--goldl); }
+
+  .f.bad input[type=text], .f.bad .pills label, .f.bad .row{ border-color:var(--err); }
+  .f .msg{ display:none; color:var(--err); font-size:.8rem; margin:2px 0 8px; }
+  .f.bad .msg{ display:block; }
+
+  /* Review */
+  .rv{ border:1px solid var(--line); border-radius:12px; background:var(--card); margin-bottom:12px; }
+  .rv-h{ display:flex; justify-content:space-between; align-items:center; padding:12px 14px; border-bottom:1px solid var(--line); }
+  .rv-h b{ font-size:.78rem; letter-spacing:.12em; text-transform:uppercase; }
+  .rv dl{ margin:0; padding:6px 14px 10px; display:grid; grid-template-columns:minmax(0, 42%) minmax(0, 1fr); gap:6px 12px; font-size:.86rem; }
+  .rv dt{ color:var(--muted); }
+  .rv dd{ margin:0; overflow-wrap:anywhere; white-space:pre-wrap; }
+  .linkbtn{ background:none; border:0; padding:6px 0; font:inherit; font-size:.86rem; color:var(--goldd); text-decoration:underline; cursor:pointer; }
+  .chk{ display:flex; gap:10px; align-items:flex-start; padding:11px 12px; border:1px solid #D9D1C2; border-radius:8px; background:var(--card); cursor:pointer; font-size:.92rem; }
+  .chk input{ width:20px; height:20px; margin:1px 0 0; accent-color:var(--ink); flex:0 0 20px; }
+  .f.bad .chk{ border-color:var(--err); }
+
+  /* Bottom bar */
+  .bar{ position:fixed; left:0; right:0; bottom:0; z-index:10; background:var(--bg); border-top:1px solid rgba(22,21,15,.16); box-shadow:0 -10px 24px -8px rgba(22,21,15,.18); padding:12px 20px calc(12px + env(safe-area-inset-bottom, 0px)); }
+  .bar-in{ max-width:640px; margin:0 auto; display:flex; gap:10px; }
+  .btn{ min-height:52px; border-radius:0; font:inherit; font-weight:700; letter-spacing:.1em; text-transform:uppercase; font-size:.82rem; cursor:pointer; padding:0 18px; }
+  .btn-back{ background:transparent; border:1px solid var(--ink); color:var(--ink); flex:0 0 auto; }
+  .btn-next{ flex:1; background:var(--ink); border:1px solid var(--ink); color:#fff; }
+  .btn:focus-visible{ outline:3px solid var(--gold); outline-offset:2px; }
+  .btn[disabled]{ opacity:.6; cursor:wait; }
+  .saved{ text-align:center; font-size:.74rem; color:var(--faint); margin-top:14px; }
+  .formerr{ background:var(--errl); color:var(--err); padding:12px 14px; border-radius:8px; font-size:.88rem; margin-bottom:14px; }
+
+  .done{ text-align:center; padding-top:40px; }
+  .done img{ width:84px; height:84px; border-radius:50%; object-fit:cover; border:3px solid var(--goldl); }
+  .done h1{ font-family:var(--display); font-size:2.2rem; font-weight:600; margin:16px 0 8px; }
+  .done p{ color:var(--muted); max-width:46ch; margin:0 auto 12px; }
+
+  body.typing .bar{ display:none; }
+  body.typing .wrap{ padding-bottom:40vh; }
+  @media (max-width:520px){
+    .wrap{ padding-inline:16px; }
+    .prog{ margin-inline:-16px; padding-inline:16px; }
+    .f.half{ grid-column:1 / -1; }
+    .f.half.keep{ grid-column:auto; }
+    .top{ padding-block:14px 10px; }
+    .top img{ width:38px; height:38px; }
+    .step-h{ font-size:1.75rem; margin-top:20px; }
+    .q{ padding:14px 12px 6px; }
+    .rv dl{ grid-template-columns:1fr; gap:0; }
+    .rv dt{ font-size:.78rem; margin-top:8px; }
+    .rv dd{ font-size:.95rem; }
+    .btn{ font-size:.8rem; padding:0 14px; }
+  }
+  @media (prefers-reduced-motion: reduce){ *{ transition:none !important; scroll-behavior:auto !important; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <img src="data:image/jpeg;base64,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" alt="Donna Nuqui" width="44" height="44">
+    <div><b>Donna Nuqui</b><span>Licensed Financial Advisor · Financial Needs Analysis</span></div>
+  </header>
+  <div class="prog" id="prog" aria-live="polite">
+    <div class="prog-row"><b id="progName">About you</b><span id="progCount">Step 1</span></div>
+    <div class="prog-bar"><i id="progBar"></i></div>
+  </div>
+  <main id="app"></main>
+  <p class="saved" id="savedNote">Your answers save automatically as you go. You can close this page and finish later. Just open the link again on the same phone or computer.</p>
+</div>
+<div class="bar" id="bar">
+  <div class="bar-in">
+    <button type="button" class="btn btn-back" id="btnBack" aria-label="Back">&larr; Back</button>
+    <button type="button" class="btn btn-next" id="btnNext">Next &rarr;</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  /* ===== Settings ===== */
+  /* Paste the Web app URL from your Google Apps Script deployment here. */
+  var APP_URL = '';
+  var MESSENGER = 'https://m.me/financial.advisor.donna.n';
+  var STORE_KEY = 'dn-fna-draft-v1';
+  var DONNA_IMG = document.querySelector('.top img').src;
+
+  /* ===== Tracking (GA4) — question keys only, never the answers ===== */
+  function track(name, params){ try { if(window.gtag) gtag('event', name, params || {}); } catch(e){} }
+
+  /* ===== Answers ===== */
+  var d = {};
+  try { d = JSON.parse(localStorage.getItem(STORE_KEY) || '{}') || {}; } catch(e){ d = {}; }
+  var ref = '';
+  try { ref = new URLSearchParams(location.search).get('ref') || ''; } catch(e){}
+  function save(){ try { localStorage.setItem(STORE_KEY, JSON.stringify(d)); } catch(e){} }
+
+  /* ===== Steps — wording and option text match the Sun Life FNA exactly, so answers can be copied straight across ===== */
+  var STEPS = [
+    { id:'about', name:'About you', h:'Let’s get to know your goals', p:'This short Financial Needs Analysis helps me recommend a plan that truly fits you. It takes about 5 minutes. Your answers go only to me.',
+      fields:[
+        { t:'sec', l:'Personal information of applicant' },
+        { k:'First', l:'First name', t:'text', req:true, half:true, ac:'given-name', col:'Applicant' },
+        { k:'Middle', l:'Middle name', t:'text', half:true, ac:'additional-name', col:'Applicant' },
+        { k:'Last', l:'Last name', t:'text', req:true, half:true, ac:'family-name', col:'Applicant' },
+        { k:'Suffix', l:'Suffix', t:'text', half:true, keep:true, ph:'Jr., III', col:'Applicant' }
+      ] },
+
+    { id:'goals', name:'Your goals', h:'Your goals', p:'Tell me where you are in life and what you want this plan to do for you.',
+      fields:[
+        { k:'q1', n:1, l:'What is your present life stage?', hint:'Choose one', t:'cards', req:true, col:'FNA', opts:[
+          'GETTING STARTED. Building independence and confidence.',
+          'MOVING UP. Prioritizing family above all.',
+          'PREPARING AHEAD. Nurturing my health and wealth.',
+          'LEAVING A LEGACY. Ensuring lasting golden years.'
+        ] },
+        { k:'q2', n:2, l:'What is/are your objective(s) for purchasing our product?', hint:'Choose all that apply', t:'multi', req:true, col:'FNA', opts:[
+          'INCOME PROTECTION. Money to protect against financial setbacks (e.g. death, accident, disability, etc.)',
+          'HEALTH PROTECTION. Money to cover medical expenses (e.g. critical illness, hospitalization, etc.)',
+          'EDUCATION. Money for your child’s college education.',
+          'RETIREMENT. Money for a comfortable retirement.',
+          'LIFE MILESTONES. Money for your life milestones and other needs.',
+          'ESTATE TRANSFER. Money to efficiently transfer wealth to loved ones.'
+        ] },
+        { k:'q3', n:3, l:'What type(s) of products are you looking for to meet your objective(s) above?', hint:'Choose all that apply', t:'multi', req:true, col:'FNA', opts:[
+          'INSURANCE. Insurance product without any savings or investment element.',
+          'INSURANCE WITH SAVINGS. Insurance product with savings but without investment element.',
+          'INSURANCE WITH INVESTMENT. Insurance product with investment risks borne by you.',
+          'INVESTMENT. Investment product with no insurance protection; risks borne by you'
+        ] }
+      ] },
+
+    { id:'commit', name:'Commitment', h:'Your commitment', p:'This helps me match the plan to what’s comfortable for you, not just what sounds good.',
+      fields:[
+        { k:'q4', n:4, l:'For how long are you able and willing to contribute and keep THIS application?', hint:'Choose one', t:'radio', req:true, col:'FNA', opts:['1 year', '5 years', '10 years', 'Over 20 years', 'Whole Life'] },
+        { k:'q5', n:5, l:'What percent of your investible/financial assets will be set aside for THIS application?', hint:'Choose one', t:'radio', req:true, col:'FNA', opts:['Less than 5%', '5% to 15%', '16% to 25%', '26% to 35%', 'Over 35%'],
+          help:'Investible/financial assets are things like cash, savings, time deposits, stocks and mutual funds. Your house, car and other property don’t count here.' },
+        { k:'q6', n:6, l:'Approximate Net Worth', hint:'Choose one', t:'radio', req:true, col:'FNA', opts:['Under PhP 1 Million', '1 Million to 15 Million', 'Over PhP 15 Million'],
+          help:'Net worth = everything you own (savings, property, investments) minus everything you owe (loans, credit cards).' }
+      ] },
+
+    { id:'risk1', name:'Investment experience', h:'Your investing experience', p:'There are no right or wrong answers here. This just helps me recommend funds that match how comfortable you are with risk.',
+      fields:[
+        { t:'sec', l:'Risk profiling' },
+        { k:'q7', n:7, l:'How much is your knowledge of investments?', hint:'Choose one', t:'cards', titled:true, req:true, col:'Risk profiling', opts:[
+          'No knowledge.',
+          'Limited. I have limited knowledge of investments outside of bank deposits',
+          'Moderate. I have some knowledge of investments like bonds, stocks and pooled funds.',
+          'Good. I have general knowledge of investments like bonds, stocks, mutual funds and derivatives.',
+          'Extensive. I have extensive knowledge of investments like bonds, stocks, mutual funds, derivatives, and structured products.'
+        ] },
+        { k:'q8', n:8, l:'How many years have you been investing in stocks, bonds and mutual funds/UITFs?', hint:'Choose one', t:'radio', req:true, col:'Risk profiling', opts:[
+          'No experience', 'Less than one (1) year', 'One (1) year to Five (5) years', 'Six (6) years to Ten (10) years', 'Over Ten (10) years'
+        ] },
+        { k:'q9', n:9, l:'How would you best describe your investment objective, and the level of risk you can take?', hint:'Choose one', t:'cards', titled:true, req:true, col:'Risk profiling', opts:[
+          'Capital preservation. I want my capital secured even if the investments provide low returns.',
+          'Regular Income. I prefer investments that provide a predictable flow of income, as opposed to funds that widely fluctuate.',
+          'Income and growth. I seek a regular flow of income but will accept some volatility for capital growth. I prefer investments that provide both opportunities to earn income and to grow over time.',
+          'Capital growth. I seek long term growth with some income. I am comfortable with volatility in order to achieve capital growth.',
+          'Capital appreciation. I seek capital appreciation and fully accept volatility. I prefer high-risk investments with high potential returns.'
+        ] }
+      ] },
+
+    { id:'risk2', name:'Risk and timeframe', h:'Risk and timeframe', p:'Almost done. Just three more questions.',
+      fields:[
+        { t:'sec', l:'Risk profiling' },
+        { k:'q10', n:10, l:'How much are you willing to invest in higher-risk investments?', hint:'Choose one', t:'radio', req:true, col:'Risk profiling', opts:[
+          'Less than 20%', '21% to 40%', '41% to 60%', '61% to 80%', 'Over 80%'
+        ], help:'Out of the money you’d invest, how much are you okay putting in options that can go up and down a lot, like stocks or equity funds?' },
+        { k:'q11', n:11, l:'How long can you keep your money invested to achieve your financial goals?', hint:'Choose one', t:'radio', req:true, col:'Risk profiling', opts:[
+          'Less than one (1) year', 'One (1) year to Two (2) years', 'Three (3) years to Five (5) years', 'Six (6) years to Ten (10) years', 'Over Ten (10) years'
+        ] },
+        { k:'q12', n:12, l:'Which statement best describes your current financial situation?', hint:'Please consider your regular expenses, your ability to repay outstanding loans, and your savings for emergencies and retirement. (Choose one)', t:'cards', req:true, col:'Risk profiling', opts:[
+          'I need this investment to supplement my current income.',
+          'I do not need this investment to supplement my current income; however, this could change in the next months.',
+          'I do not expect to use this investment to meet current requirements, but I would need to access these funds in an emergency.',
+          'My financial situation is stable, and I have sufficient cash flow to meet most of my requirements.',
+          'My financial situation is completely secure, and I can meet emergency requirements.'
+        ] }
+      ] },
+
+    { id:'review', name:'Review and submit', h:'Review your answers', p:'Check that everything is correct. Tap Edit to change a section.', fields:[] }
+  ];
+
+  /* ===== Rendering ===== */
+  var app = document.getElementById('app');
+  var cur = 0;
+  try { cur = Math.min(parseInt(localStorage.getItem(STORE_KEY + '-step') || '0', 10) || 0, STEPS.length - 1); } catch(e){}
+
+  function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]; }); }
+  function valStr(v){ return Array.isArray(v) ? v.join('\n') : String(v == null ? '' : v); }
+  function isReq(f){ return typeof f.req === 'function' ? f.req() : !!f.req; }
+  function visible(f){ return !f.show || f.show(); }
+  /* "MOVING UP. Prioritizing family above all." -> title + description */
+  function splitOpt(o, f){
+    var m = f && f.titled ? /^([^.]{1,25})\.\s+(.+)$/.exec(o) : /^([A-Z][A-Z \/&-]+)\.\s*(.*)$/.exec(o);
+    return m ? { t:m[1], s:m[2] } : { t:'', s:o };
+  }
+  function labelHTML(f, id){
+    var reqMark = isReq(f) ? '<span class="req" aria-hidden="true">*</span>' : '<span class="opt">(optional)</span>';
+    var txt = esc(f.l).replace(/\bTHIS\b/g, '<u>THIS</u>');
+    return (f.n ? '<span class="num">' + f.n + '.</span>' : '') + txt + reqMark + (f.hint ? '<span class="hint">' + esc(f.hint) + '</span>' : '');
+  }
+
+  function fieldHTML(f, i){
+    var id = 'f_' + (f.k || ('x' + i));
+    if(f.t === 'sec') return '<div class="sec" data-i="' + i + '">' + esc(f.l) + '</div>';
+    if(f.t === 'note') return '<div class="note" data-i="' + i + '">' + esc(f.l) + '</div>';
+    var v = d[f.k];
+    var cls = 'f' + (f.half ? ' half' : '') + (f.keep ? ' keep' : '') + (f.n ? ' q' : '');
+    var h = '<div class="' + cls + '" data-i="' + i + '">';
+    if(f.t === 'radio'){
+      h += '<div class="lbl" id="' + id + '_l">' + labelHTML(f, id) + '</div><div class="pills" role="radiogroup" aria-labelledby="' + id + '_l">';
+      f.opts.forEach(function(o, j){
+        h += '<label><input type="radio" name="' + id + '" value="' + esc(o) + '" data-k="' + f.k + '"' + (v === o ? ' checked' : '') + '>' + esc(o) + '</label>';
+      });
+      h += '</div>';
+    } else if(f.t === 'cards' || f.t === 'multi'){
+      var multi = f.t === 'multi', sel = multi ? (Array.isArray(v) ? v : []) : v;
+      h += '<div class="lbl" id="' + id + '_l">' + labelHTML(f, id) + '</div><div class="rows" role="' + (multi ? 'group' : 'radiogroup') + '" aria-labelledby="' + id + '_l">';
+      f.opts.forEach(function(o, j){
+        var p = splitOpt(o, f), on = multi ? sel.indexOf(o) > -1 : sel === o;
+        h += '<label class="row"><input type="' + (multi ? 'checkbox' : 'radio') + '" name="' + id + '" value="' + esc(o) + '" data-k="' + f.k + '"' + (multi ? ' data-multi="1"' : '') + (on ? ' checked' : '') + '>'
+          + '<span>' + (p.t ? '<b>' + esc(p.t) + '</b>' : '') + '<span>' + esc(p.s) + '</span></span></label>';
+      });
+      h += '</div>';
+    } else {
+      h += '<label for="' + id + '">' + labelHTML(f, id) + '</label>';
+      h += '<input type="text" autocapitalize="words" enterkeyhint="next" id="' + id + '" data-k="' + f.k + '"' + (f.ph ? ' placeholder="' + esc(f.ph) + '"' : '') + (f.ac ? ' autocomplete="' + f.ac + '"' : '') + ' value="' + esc(v || '') + '">';
+    }
+    if(f.help) h += '<div class="help">' + esc(f.help) + '</div>';
+    h += '<div class="msg"></div></div>';
+    return h;
+  }
+
+  function renderStep(){
+    var s = STEPS[cur];
+    document.getElementById('progName').textContent = s.name;
+    document.getElementById('progCount').textContent = 'Step ' + (cur + 1) + ' of ' + STEPS.length;
+    document.getElementById('progBar').style.width = Math.round((cur + 1) / STEPS.length * 100) + '%';
+    document.getElementById('btnBack').style.visibility = cur === 0 ? 'hidden' : 'visible';
+    document.getElementById('btnNext').innerHTML = cur === STEPS.length - 1 ? 'Submit answers' : (cur === STEPS.length - 2 ? 'Review answers &rarr;' : 'Next &rarr;');
+    var html = '<h1 class="step-h">' + esc(s.h) + '</h1>' + (s.p ? '<p class="step-p">' + esc(s.p) + '</p>' : '');
+    track('fna_step_view', { step_id:s.id, step_number:cur + 1 });
+    if(s.id === 'review'){ app.innerHTML = html + reviewHTML(); bindReview(); return; }
+    html += '<div class="grid">';
+    s.fields.forEach(function(f, i){ html += fieldHTML(f, i); });
+    app.innerHTML = html + '</div>';
+  }
+
+  app.addEventListener('keydown', function(e){
+    if(e.key !== 'Enter' || e.target.tagName !== 'INPUT' || e.target.type !== 'text') return;
+    e.preventDefault();
+    var list = Array.prototype.slice.call(app.querySelectorAll('input[type=text]'));
+    var i = list.indexOf(e.target);
+    if(i > -1 && list[i + 1]) list[i + 1].focus(); else e.target.blur();
+  });
+  /* Hide the Back/Next bar while the phone keyboard is open */
+  if(window.visualViewport){
+    var baseH = window.innerHeight;
+    var kb = function(){
+      if(!document.activeElement || !/^(INPUT|TEXTAREA)$/.test(document.activeElement.tagName)) baseH = Math.max(baseH, window.innerHeight);
+      document.body.classList.toggle('typing', baseH - window.visualViewport.height > 150);
+    };
+    window.visualViewport.addEventListener('resize', kb);
+  }
+
+  var answered = {};
+  function onInput(e){
+    var el = e.target, k = el.getAttribute && el.getAttribute('data-k');
+    if(!k) return;
+    if(el.getAttribute('data-multi')){
+      var arr = Array.isArray(d[k]) ? d[k].slice() : [];
+      var ix = arr.indexOf(el.value);
+      if(el.checked && ix < 0) arr.push(el.value);
+      if(!el.checked && ix > -1) arr.splice(ix, 1);
+      /* keep Sun Life's order */
+      var f = findField(k);
+      if(f) arr.sort(function(a, b){ return f.opts.indexOf(a) - f.opts.indexOf(b); });
+      d[k] = arr;
+      if(el.checked) track('fna_option_toggle', { question:k, option_index:(f ? f.opts.indexOf(el.value) + 1 : 0) });
+    } else {
+      d[k] = el.value;
+    }
+    save();
+    if(e.type === 'change' && !answered[k]){ answered[k] = 1; track('fna_answer', { question:k }); }
+    var wrap = el.closest('.f'); if(wrap && e.type === 'change') wrap.classList.remove('bad');
+  }
+  app.addEventListener('input', onInput);
+  app.addEventListener('change', onInput);
+  function findField(k){
+    for(var i = 0; i < STEPS.length; i++) for(var j = 0; j < STEPS[i].fields.length; j++) if(STEPS[i].fields[j].k === k) return STEPS[i].fields[j];
+    return null;
+  }
+
+  /* ===== Validation ===== */
+  function checkField(f){
+    var v = valStr(d[f.k]).trim();
+    if(isReq(f) && !v) return f.t === 'multi' ? 'Please choose at least one.' : (f.t === 'text' ? 'Please fill this in.' : 'Please choose one.');
+    return '';
+  }
+  function validateStep(idx, mark){
+    var s = STEPS[idx], first = null, ok = true;
+    s.fields.forEach(function(f, i){
+      if(!f.k || !visible(f)) return;
+      var msg = checkField(f);
+      if(mark){
+        var el = app.querySelector('[data-i="' + i + '"]');
+        if(el){ el.classList.toggle('bad', !!msg); var m = el.querySelector('.msg'); if(m) m.textContent = msg; }
+        if(msg && !first) first = el;
+      }
+      if(msg) ok = false;
+    });
+    if(first){ first.scrollIntoView({ behavior:'smooth', block:'center' }); track('fna_validation_error', { step_id:s.id }); }
+    return ok;
+  }
+
+  /* ===== Review + data rows ===== */
+  function rowsFor(idx){
+    var out = [];
+    STEPS[idx].fields.forEach(function(f){
+      if(!f.k || !visible(f)) return;
+      var v = valStr(d[f.k]); if(!v) return;
+      out.push([f.col + ' · ' + (f.n ? f.n + '. ' : '') + f.l, v, (f.n ? f.n + '. ' : '') + f.l]);
+    });
+    return out;
+  }
+  function reviewHTML(){
+    var h = '';
+    for(var i = 0; i < STEPS.length - 1; i++){
+      var r = rowsFor(i);
+      h += '<section class="rv"><div class="rv-h"><b>' + esc(STEPS[i].name) + '</b><button type="button" class="linkbtn" data-edit="' + i + '">Edit</button></div><dl>';
+      h += r.length ? r.map(function(x){ return '<dt>' + esc(x[2]) + '</dt><dd>' + esc(x[1]) + '</dd>'; }).join('') : '<dt>No answers</dt><dd></dd>';
+      h += '</dl></section>';
+    }
+    h += '<div class="f" data-i="cert" style="margin-top:18px"><label class="chk" for="f_cert"><input type="checkbox" id="f_cert"' + (d.cert === 'Yes' ? ' checked' : '') + '><span>I confirm that my answers above are true. I agree to let Donna Nuqui, a licensed financial advisor, use them to recommend a suitable Sun Life plan, in line with the Data Privacy Act of 2012.</span></label><div class="msg">Please tick the box to confirm.</div></div>';
+    return h + '<div id="formErr"></div>';
+  }
+  function bindReview(){
+    Array.prototype.forEach.call(app.querySelectorAll('[data-edit]'), function(b){
+      b.addEventListener('click', function(){ track('fna_review_edit', { step_id:STEPS[+this.getAttribute('data-edit')].id }); go(parseInt(this.getAttribute('data-edit'), 10)); });
+    });
+    document.getElementById('f_cert').addEventListener('change', function(){ d.cert = this.checked ? 'Yes' : ''; save(); this.closest('.f').classList.remove('bad'); });
+  }
+
+  /* ===== Navigation ===== */
+  function go(n){
+    cur = Math.max(0, Math.min(STEPS.length - 1, n));
+    try { localStorage.setItem(STORE_KEY + '-step', String(cur)); } catch(e){}
+    renderStep();
+    window.scrollTo(0, 0);
+  }
+  document.getElementById('btnBack').addEventListener('click', function(){ go(cur - 1); });
+  document.getElementById('btnNext').addEventListener('click', function(){
+    if(STEPS[cur].id === 'review'){ submit(); return; }
+    if(!validateStep(cur, true)) return;
+    go(cur + 1);
+  });
+
+  /* ===== Submit to Google Sheet ===== */
+  function submit(){
+    for(var i = 0; i < STEPS.length - 1; i++){
+      if(!validateStep(i, false)){ go(i); setTimeout(function(){ validateStep(cur, true); }, 50); return; }
+    }
+    if(d.cert !== 'Yes'){ var c = app.querySelector('[data-i="cert"]'); c.classList.add('bad'); c.scrollIntoView({ behavior:'smooth', block:'center' }); return; }
+    var rows = [];
+    for(var j = 0; j < STEPS.length - 1; j++){ rowsFor(j).forEach(function(r){ rows.push([r[0], r[1]]); }); }
+    var payload = {
+      form: 'FNA',
+      ref: ref,
+      insured: [d.First, d.Middle, d.Last, d.Suffix].filter(Boolean).join(' '),
+      firstName: d.First || '',
+      rows: rows
+    };
+    var btn = document.getElementById('btnNext');
+    var errBox = document.getElementById('formErr');
+    errBox.innerHTML = '';
+    if(!/^https:\/\/script\.google\.com\//.test(APP_URL)){
+      errBox.innerHTML = '<div class="formerr">This form isn’t connected to the Google Sheet yet, so nothing was sent. Please message Donna on <a href="' + MESSENGER + '" target="_blank" rel="noopener">Messenger</a>.</div>';
+      return;
+    }
+    btn.disabled = true; btn.textContent = 'Sending…';
+    fetch(APP_URL, { method:'POST', mode:'no-cors', headers:{ 'Content-Type':'text/plain;charset=utf-8' }, body: JSON.stringify(payload) })
+      .then(function(){
+        track('fna_submit', { ref:ref });
+        try { localStorage.removeItem(STORE_KEY); localStorage.removeItem(STORE_KEY + '-step'); } catch(e){}
+        showDone(d.First);
+      })
+      .catch(function(){
+        btn.disabled = false; btn.textContent = 'Submit answers';
+        errBox.innerHTML = '<div class="formerr">We couldn’t send your answers. Please check your internet connection and tap Submit again. Your answers are still saved on this device.</div>';
+      });
+  }
+  function showDone(first){
+    document.getElementById('bar').hidden = true;
+    document.getElementById('prog').hidden = true;
+    document.getElementById('savedNote').hidden = true;
+    app.innerHTML = '<div class="done"><img src="' + DONNA_IMG + '" alt="Donna Nuqui" width="84" height="84"><h1>Thank you' + (first ? ', ' + esc(first) : '') + '!</h1>'
+      + '<p>I’ve received your answers. I’ll use them to prepare a plan recommendation that fits your goals, and I’ll message you once it’s ready.</p>'
+      + '<p><a href="' + MESSENGER + '" target="_blank" rel="noopener" id="msgBtn" class="btn btn-next" style="display:inline-flex;align-items:center;justify-content:center;text-decoration:none;padding:0 24px">Message Donna</a></p></div>';
+    document.getElementById('msgBtn').addEventListener('click', function(){ track('fna_messenger_click'); });
+    window.scrollTo(0, 0);
+  }
+
+  renderStep();
+})();
+</script>
+</body>
+</html>
